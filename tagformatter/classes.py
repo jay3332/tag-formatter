@@ -56,9 +56,9 @@ class Tag:
 
 
 class ParsedTag:
-    __slots__ = ('_parser', '_raw', '_tag', '_parent', '_args')
+    __slots__ = ('_parser', '_raw', '_tag', '_parent', '_args', '_kwargs')
 
-    def __init__(self, parent_parser, raw, *, tag, args):
+    def __init__(self, parent_parser, raw, *, tag, args, kwargs):
         self._parser = parent_parser
         self._raw = raw
 
@@ -66,6 +66,9 @@ class ParsedTag:
         self._args = []
         if args:
             self._args = args
+        self._kwargs = {}
+        if kwargs:
+            self._kwargs = kwargs
 
     @property
     def tag(self):
@@ -74,6 +77,10 @@ class ParsedTag:
     @property
     def args(self):
         return self._args
+
+    @property
+    def kwargs(self):
+        return self._kwargs
 
     @property
     def parser(self):

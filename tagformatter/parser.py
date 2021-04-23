@@ -165,6 +165,7 @@ class Parser:
             raise ValueError("Parser callbacks must have at least on parameter (The environment, usually to be named 'env')")
         arguments = re.split(self._argument_delimiter, args)
         parsed_arguments = []
+        kw_arguments = {}
 
         if args.strip() != "":
             for i, argument in enumerate(arguments):
@@ -182,7 +183,7 @@ class Parser:
                     buf = []
                     for then_arg in arguments[i:]:
                         buf.append(self.do_argument_conversion(then_arg, converter))
-                    parsed_arguments.append(buf)
+                    kw_arguments[param.name] = buf
                     continue
 
                 parsed_arguments.append(self.do_argument_conversion(argument, converter))
@@ -200,7 +201,7 @@ class Parser:
                         continue
                     parsed_arguments.append(None)
 
-        return ParsedTag(self, tag, tag=buffer, args=parsed_arguments)
+        return ParsedTag(self, tag, tag=buffer, args=parsed_arguments, kwargs=kw_arguments)
 
 
     def parse_nodes(self, nodes, content, env):
@@ -219,7 +220,7 @@ class Parser:
             string = string.rstrip(self._end_character)
             parsed_tag = self.parse_single_tag(string)
             try:
-                value = str(parsed_tag.tag.callback(env, *parsed_tag.args))
+                value = str(parsed_tag.tag.callback(env, *parsed_tag.args, **parsed_tag.kwargs))
             except AttributeError:
                 continue
 
