@@ -57,16 +57,18 @@ class Parser:
                 return tag
         return None
 
-    def tag(self, name: str, *, alias: str = None, aliases: typing.List[str] = None, **attrs):
+    def tag(self, name: str = None, *, alias: str = None, aliases: typing.List[str] = None, **attrs):
         if not aliases:
             aliases = [alias] if alias else []
 
         if self._case_insensitive:
             aliases = [alias.lower() for alias in aliases]
-            name = name.lower()
+            if name:
+                name = name.lower()
 
         def decorator(func):
-            tag_ = Tag(self, func, name, aliases, **attrs)
+            name_ = name or func.__name__
+            tag_ = Tag(self, func, name_, aliases, **attrs)
             self.tags.append(tag_)
             return tag_
 

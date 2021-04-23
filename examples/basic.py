@@ -19,6 +19,7 @@ def tag_user(env):
 def user_age(env):
     return env['user'].age
 
+
 @parser.tag("minus")
 def minus(env, low: int, high: int):
     return abs(low-high)

@@ -39,16 +39,18 @@ class Tag:
     def __call__(self, *args, **kwargs):
         return self.callback(*args, **kwargs)
 
-    def tag(self, name: str, *, alias: str = None, aliases: typing.List[str] = None, **attrs):
+    def tag(self, name: str = None, *, alias: str = None, aliases: typing.List[str] = None, **attrs):
         if not aliases:
             aliases = [alias] if alias else []
 
         if self.parser.is_case_insensitive:
             aliases = [alias.lower() for alias in aliases]
-            name = name.lower()
+            if name:
+                name = name.lower()
 
         def decorator(func):
-            tag_ = Tag(self.parser, func, name, aliases, parent=self, **attrs)
+            name_ = name or func.__name__
+            tag_ = Tag(self.parser, func, name_, aliases, parent=self, **attrs)
             self._tags.append(tag_)
             return tag_
 
