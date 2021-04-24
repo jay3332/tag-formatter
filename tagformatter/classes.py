@@ -94,3 +94,12 @@ class Converter:
 
     def __call__(self, *args, **kwargs):
         return self.converter(*args, **kwargs)
+
+
+class ENV(dict):
+    """
+    Represents an env, nothing else.
+    """
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__

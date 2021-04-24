@@ -3,7 +3,7 @@ import re
 import typing
 import inspect
 from os import urandom
-from .classes import Node, Tag, ParsedTag, Converter
+from .classes import Node, Tag, ParsedTag, Converter, ENV
 
 
 class Parser:
@@ -250,4 +250,4 @@ class Parser:
         session_env = self.env
         session_env.update(env or {})
         nodes = self.get_nodes(string)
-        return self.parse_nodes(nodes, string, env)
+        return self.parse_nodes(nodes, string, ENV(env))

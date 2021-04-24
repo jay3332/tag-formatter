@@ -21,23 +21,23 @@ parser = Parser()
 
 @parser.tag("user")
 def tag_user(env):
-    return env.get("user").name
+    return env.user.name
 
 
 @tag_user.tag("name")
 def tag_user_name(env):
-    return env.get("user").name
+    return env.user.name
 
 
 @tag_user.tag("age")
 def tag_user_age(env):
-    return env.get("user").age
+    return env.user.age
 
 
 @tag_user.tag("entertain")
 def tag_user_entertain(env, intensity: int = 1):
-    env.get("user").entertain(intensity)
-    return env.get("user").happiness
+    env.user.entertain(intensity)
+    return env.user.happiness
 
 
 to_be_parsed = "{user.name} is {user.age} years old. {user.entertain|2}"

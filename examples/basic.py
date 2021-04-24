@@ -12,12 +12,12 @@ parser = tagformatter.Parser()
 
 @parser.tag("user")
 def tag_user(env):
-    return env['user'].name
+    return env.user.name
 
 
 @tag_user.tag("age", alias="a")
 def user_age(env):
-    return env['user'].age
+    return env.user.age
 
 
 @parser.tag("minus")

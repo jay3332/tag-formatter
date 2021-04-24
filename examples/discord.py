@@ -14,47 +14,47 @@ parser = TagParser()
 
 @parser.tag("user", alias="member")
 def _user(env):
-    return str(env.get('user'))
+    return str(env.user)
 
 
 @_user.tag("name")
 def _user_name(env):
-    return env.get('user').name
+    return env.user.name
 
 
 @_user.tag("mention", alias="ping")
 def _user_mention(env):
-    return env.get('user').mention
+    return env.user.mention
 
 
 @_user.tag("discriminator", alias="discrim")
 def _user_discrim(env):
-    return env.get('user').discriminator
+    return env.user.discriminator
 
 
 @_user.tag("id")
 def _user_id(env):
-    return env.get('user').id
+    return env.user.id
 
 
 @parser.tag("channel")
 def _channel(env):
-    return env.get('channel').name
+    return env.channel.name
 
 
 @_channel.tag('mention')
 def _channel_mention(env):
-    return env.get('channel').mention
+    return env.channel.mention
 
 
 @_channel.tag('id')
 def _channel_id(env):
-    return env.get('channel').id
+    return env.channel.id
 
 
 @parser.tag("guild")
 def _guild(env):
-    return env.get('guild').name
+    return env.guild.name
 
 
 # Fun tags
@@ -69,8 +69,8 @@ def _random_choice(env, *items):
 
 # Converters
 @converter
-def get_user(env, arg):
-    return env.get('ctx').bot.get_user(int(arg))
+def get_user(parser_, arg):
+    return parser_.env.ctx.bot.get_user(int(arg))
 
 
 @parser.tag("get_user")
