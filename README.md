@@ -36,11 +36,11 @@ parser = tagformatter.Parser()
 
 @parser.tag("user")
 def user_tag(env):
-    return env["user"].name
+    return env.user.name
 
 @user_tag.tag("age")
 def user_age_tag(env):
-    return env["user"].age
+    return env.user.age
 
 @parser.tag("random", alias="rng")
 def rng_tag(env, low: int = 1, high: int = 10):
