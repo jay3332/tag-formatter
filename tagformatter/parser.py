@@ -193,7 +193,7 @@ class Parser:
             if args_left > 0:
                 for i in range(len(parsed_arguments), len(callback_params)):
                     try:
-                        param = callback_params[i]
+                        param = callback_params[i+1]
                     except IndexError:
                         break
                     default = param.default

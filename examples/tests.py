@@ -1,10 +1,14 @@
-import typing
+import random
 import tagformatter
 
-p = tagformatter.Parser()
+parser = tagformatter.Parser()
 
-@p.tag('add')
-def add(env, *things: typing.Union[int, float]):
-  return sum(things)
+@parser.tag(name="random")
+def random_tag(env, min_: int, max_: int = 10):
+  return random.randint(min_, max_)
 
-print(p.parse('{add:1,2,3}'))
+@random_tag.tag()
+def choice(env, *items):
+  return random.choice(items)
+
+parser.parse('Random number: {random:5} | Random item: {random.choice:this,that,other}')
