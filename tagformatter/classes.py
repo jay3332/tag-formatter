@@ -50,7 +50,9 @@ class Tag:
 
         def decorator(func):
             name_ = name or func.__name__
-            tag_ = Tag(self.parser, func, name_, aliases, parent=self, **attrs)
+            tag_ = Tag(
+                self.parser, func.callback if isinstance(func, Tag) else func,
+                name_, aliases, parent=self, **attrs)
             self._tags.append(tag_)
             return tag_
 

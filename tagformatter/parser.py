@@ -22,8 +22,8 @@ class Parser:
         self._argument_delimiter = attrs.pop("argument_delimiter", None) or r",\s?"
         self._attribute_delimiter = attrs.pop("attribute_delimiter", None) or r"\."
         self._escape_character = attrs.pop("escape_character", "\\") or urandom(32).hex()
-        self._start_character = attrs.pop("start_character", None) or "{"
-        self._end_character = attrs.pop("end_character", None) or "}"
+        self._start_character = attrs.pop("start_character", None) or r"\{"
+        self._end_character = attrs.pop("end_character", None) or r"\}"
         self._case_insensitive = attrs.pop("case_insensitive", False)
 
     @property
@@ -68,7 +68,9 @@ class Parser:
 
         def decorator(func):
             name_ = name or func.__name__
-            tag_ = Tag(self, func, name_, aliases, **attrs)
+            tag_ = Tag(
+                self, func.callback if isinstance(func, Tag) else func,
+                name_, aliases, **attrs)
             self.tags.append(tag_)
             return tag_
 
@@ -148,12 +150,12 @@ class Parser:
         :return: A `ParsedTag`.
         """
         regex = f"(?<!{re.escape(self._escape_character)})"
-        splitted = re.split(regex+self._delimiter, tag)
+        splitted = re.split(regex+self._delimiter, tag, 1)
         if len(splitted) < 2:
             tag_, args = splitted[0], ''
         else:
             tag_, args = splitted[:2]
-        tag_body = re.split(self._attribute_delimiter, tag_)
+        tag_body = re.split(regex+self._attribute_delimiter, tag_)
 
         buffer = self
         for i, iteration in enumerate(tag_body, start=1):
@@ -164,8 +166,8 @@ class Parser:
 
         callback_params = list(inspect.signature(buffer.callback).parameters.values())
         if len(callback_params) < 1:
-            raise ValueError("Parser callbacks must have at least on parameter (The environment, usually to be named 'env')")
-        arguments = re.split(self._argument_delimiter, args)
+            raise ValueError("Parser callbacks must have at least one parameter (The environment, usually to be named 'env')")
+        arguments = re.split(regex+self._argument_delimiter, args)
         parsed_arguments = []
 
         if args.strip() != "":
@@ -221,7 +223,8 @@ class Parser:
             string = string.rstrip(self._end_character)
             parsed_tag = self.parse_single_tag(string)
             try:
-                value = str(parsed_tag.tag.callback(env, *parsed_tag.args))
+                value = parsed_tag.tag.callback(env, *parsed_tag.args)
+                value = "" if value is None else str(value)
             except AttributeError:
                 continue
 
