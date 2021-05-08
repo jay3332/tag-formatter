@@ -11,8 +11,9 @@ class Parser:
     The base parser.
     This class can be subclassed for custom behaviors.
     """
-    def __init__(self, env: typing.Optional[dict] = None, **attrs):
+    def __init__(self, env: typing.Optional[dict] = None, *, limit: int = None, **attrs):
         self._parse_attrs(attrs)
+        self.limit = limit
         self.env = env or {}
         self.tags = []
         self.setup()
@@ -207,7 +208,7 @@ class Parser:
         return ParsedTag(self, tag, tag=buffer, args=parsed_arguments)
 
 
-    def parse_nodes(self, nodes, content, env):
+    def parse_nodes(self, nodes, content, env, limit):
         """
         Parses a list of nodes to it's content.
         :param nodes: A list of `Nodes` to parse.
@@ -216,6 +217,7 @@ class Parser:
         :return str: The parsed string.
         """
         final = content
+        nodes_parsed = 0
 
         for i, node in enumerate(nodes):
             string = final[node.coord[0]:node.coord[1]+1]
@@ -234,6 +236,10 @@ class Parser:
             diff = replacement - slice_length
 
             final = final[:start] + value + final[end + 1:]
+            nodes_parsed += 1
+
+            if limit and nodes_parsed >= limit:
+                break
 
             for future_node in itertools.islice(nodes, i + 1, None):
                 if future_node.coord[0] > start:
@@ -249,8 +255,8 @@ class Parser:
 
         return final
 
-    def parse(self, string, env=None):
+    def parse(self, string, env=None, *, limit=None):
         session_env = self.env
         session_env.update(env or {})
         nodes = self.get_nodes(string)
-        return self.parse_nodes(nodes, string, ENV(env))
+        return self.parse_nodes(nodes, string, ENV(env), limit)
